@@ -1,0 +1,5 @@
+data/.env
+data/msg_hits/*.json
+data/msg_hits/archive
+test2.py
+data/config.ini

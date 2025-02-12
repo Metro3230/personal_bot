@@ -1,0 +1,7 @@
+data = {
+    "Sender Name": sender_name,
+    "Messages Today": 0,
+    "Spam Flag": 0,
+    "Last Update Date": today_date,
+    "Messages": []
+}

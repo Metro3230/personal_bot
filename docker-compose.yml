@@ -1,0 +1,11 @@
+version: '3.8'  # используйте актуальную версию Compose
+
+services:
+  shop_bot:
+    build:
+      context: .  # папка, в которой находится Dockerfile
+    image: personal_bot:v015  # указываем имя и тег образа
+    container_name: personal_bot_v015
+    restart: unless-stopped
+    volumes:
+      - ./data:/personal_bot/data
