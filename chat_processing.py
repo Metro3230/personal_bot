@@ -92,22 +92,6 @@ def get_context(chat_id): #извлечение контекста перепи�
     else:
         return False #лож, если файла нет
         
-
-
-
-# def remove_limit(chat_id): #обнуление лимита
-
-#     file_name = f"{msg_hist_dir}/{chat_id}.json"    # Формируем имя файла
-
-#     if os.path.isfile(file_name):     # Если файл существует
-#         with open(file_name, mode='r', encoding='utf-8') as file:  #, загружаем существующие данные
-#             data = json.load(file)
-            
-#         data["Messages Today"] = 0  # Сброс счётчика     
-           
-#         with open(file_name, mode='w', encoding='utf-8') as file:    # Сохраняем обновленные данные обратно в файл
-#             json.dump(data, file, ensure_ascii=False, indent=4)
-     
      
 
 def remove_context(chat_id): #очистка контекста
@@ -208,108 +192,7 @@ def get_proc_flag(chat_id): # флаг состояния ожидания от�
 
 
 
-# def arch_chat(chat_id):#---Архивирование чата chat_id-------------------------------------------------------
-    
-#     source_path = msg_hist_dir / f'{chat_id}.json'
-    
-#     if not os.path.exists(source_path):    # Проверяем, существует ли исходный чат
-#         return
 
-#     if not os.path.exists(msg_arch_dir):    # Проверяем, существует ли папка назначения, и создаем её, если нужно
-#         os.makedirs(msg_arch_dir)
-
-#     filename = os.path.basename(source_path)    # Получаем имя файла и расширение
-#     name, ext = os.path.splitext(filename)
-
-#     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")    # Генерируем текущую дату и время в формате YYYY-MM-DD_HH-MM-SS
-
-#     new_filename = f"{name}_{timestamp}{ext}"    # Создаем новое имя файла
-#     destination_path = os.path.join(msg_arch_dir, new_filename)
-
-#     shutil.move(source_path, destination_path)    # Перемещаем файл
-
-
-
-
-# def get_actual_ids(): #---Получение списка пользователей в виде массива-----------------------+
-#     json_filenames = []
-
-#     for filename in os.listdir(msg_hist_dir):    # Перебираем все файлы в папке
-#         if filename.endswith('.json'):        # Проверяем, имеет ли файл расширение .json
-#             json_filenames.append(os.path.splitext(filename)[0])            # Добавляем имя файла без расширения в массив
-
-#     return json_filenames
-        
-
-
-
-# def get_active_users():#---получить кол-во активных пользователей----------------------------+
-#     try:
-#         # Получаем список файлов и папок в указанной директории
-#         files = os.listdir(msg_hist_dir)
-#         # Фильтруем только файлы с расширением .json
-#         json_files = [file for file in files if file.endswith('.json') and os.path.isfile(os.path.join(msg_hist_dir, file))]
-#         return len(json_files)
-#     except FileNotFoundError:
-#         return 'error'
-#     except PermissionError:
-#         return 'err'
-    
-    
-    
-    
-# def get_departed_users():#---получить количество ушедших пользователей-----------------------+
-#     try:
-#         # Получаем список файлов и папок в указанной директории
-#         files = os.listdir(msg_arch_dir)
-#         # Фильтруем только файлы с расширением .json
-#         json_files = [file for file in files if file.endswith('.json') and os.path.isfile(os.path.join(msg_arch_dir, file))]
-#         return len(json_files)
-#     except FileNotFoundError:
-#         return 'error'
-#     except PermissionError:
-#         return 'err'
-
-
-
-
-
-
-
-# chat_id = 678035955
-# spam_flag(chat_id, 1)
-# print(spam_flag(chat_id))
-# spam_flag(chat_id, 0)
-# print(spam_flag(chat_id))
-
-
-
-# Пример вызова функции
-# chat_id = 7080566621
-# role = 'user'
-# message = 'привет туалет'
-# price = 0.1856456
-# sender_name = 'alex_under'
-# new_model = "gpt_4"
-# save_message_to_json(chat_id, role, message, price, sender_name)
-
-# print(get_proc_flag(chat_id))
-# set_proc_flag(chat_id, 3, 'test')
-# print(get_proc_flag(chat_id))
-
-# print(get_context(chat_id))
-# print(proc_sys_msg(chat_id))
-# proc_sys_msg(chat_id, 0)
-# print(proc_sys_msg(chat_id))
-# print(get_context(chat_id))
-
-# print(proc_lang_model(chat_id))
-# proc_lang_model(chat_id, new_model)
-# print(proc_lang_model(chat_id))
-
-# print('-----------------')
-# remove_context(chat_id)
-# print(get_context(chat_id))
 
 
 
