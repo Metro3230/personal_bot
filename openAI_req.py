@@ -20,11 +20,13 @@ ai_API_key = os.getenv('OPENAI_API_KEY')    # читаем token ai c .env
 client_openai = AsyncOpenAI(
     api_key=ai_API_key,
     base_url=config['AIconf']['openai_API_url'],
+    timeout=float(config['AIconf']['ai_req_timeout']),
 ) 
 
 client_deepseek = AsyncOpenAI(
     api_key=ai_API_key,
     base_url=config['AIconf']['deepseek_API_url'],
+    timeout=float(config['AIconf']['ai_req_timeout']),
 )
 
 
@@ -58,7 +60,7 @@ async def req_to_deepseek(msgs, model='deepseek-chat'):
                 messages=msgs,
                 )
     
-    response_req_tokens = response.usage.prompt_tokens        #парсим кол-вы токенов на запрос и сам ответ   
+    response_req_tokens = response.usage.prompt_tokens        #парсим кол-во токенов на запрос и сам ответ   
     response_resp_price = response.usage.completion_tokens        
     response_text = response.choices[0].message.content
     

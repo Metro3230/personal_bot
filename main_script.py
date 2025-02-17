@@ -12,6 +12,7 @@ import asyncio
 import shutil
 import configparser
 
+
 script_dir = Path(__file__).parent  # Определяем путь к текущему скрипту
 data_dir = script_dir / 'data'
 msg_hist_dir = data_dir / 'msg_hits'   #папка с историями сообщений
@@ -438,11 +439,80 @@ async def send_msg(chat_id, message_text):
 #----------------------------------------------------------------------------------------------------------
 
 
+# #----------------------------------------стандартная обработка стандартного вопроса------------------------
+
+# async def question_for_ai(chat_id, username, message_text):
+#     try:
+#         try:
+#             await bot.send_chat_action(chat_id, 'typing', timeout=10)
+#         except Exception as e:
+#             logger.error(f"send_chat_action не отправлен (для chat_id {chat_id}) -- {e}") 
+#         chat.save_message_to_json(chat_id=chat_id, role="user", sender_name=username, message=message_text)   #записываем текст сообщения от ЮЗЕРА в историю сообщений
+#         last_messages = chat.get_context(chat_id)
+#         lang_model = chat.proc_lang_model(chat_id)
+        
+#         openai_models = []
+#         openai_models.append(config['mainconf']['btn_text_1'])
+#         openai_models.append(config['mainconf']['btn_text_2'])
+#         openai_models.append(config['mainconf']['btn_text_3'])
+#         openai_models.append(config['mainconf']['btn_text_4'])
+#         openai_models.append(config['mainconf']['btn_text_5'])
+        
+#         deepseek_models = []
+#         deepseek_models.append(config['mainconf']['btn_text_6'])
+#         deepseek_models.append(config['mainconf']['btn_text_7'])
+        
+#         if lang_model in openai_models:        # запрос в зависимости от модели
+#             response_text, price, response_req_tokens = await openAI.req_to_openai(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
+#         elif lang_model in deepseek_models:
+#             response_text, price, response_req_tokens = await openAI.req_to_deepseek(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
+        
+#         chat.save_message_to_json(chat_id=chat_id, role="assistant", sender_name=username, message=response_text, price=price)      #записываем текст сообщения от БОТА в историю сообщений
+#         await send_msg(chat_id, response_text)
+#         # await bot.send_message(chat_id, response_text, parse_mode='MarkdownV2', reply_markup=types.ReplyKeyboardRemove())     #отправляем ответ
+#     except Exception as e:
+#         await bot.send_message(chat_id, f"Оши5ка : {e}", reply_markup=types.ReplyKeyboardRemove())     #отправляем ответ
+#         logger.error(f"Ошибка стандартной обработки стандартного вопроса - {e}")
+
+# #----------------------------------------------------------------------------------------------------------
+
+
 #----------------------------------------стандартная обработка стандартного вопроса------------------------
 
+
 async def question_for_ai(chat_id, username, message_text):
+    wait_message_sent = False
+    wait_message_id = None
+    typing_task = None
+    wait_message_task = None
+
     try:
+        
+        # отправлчяем статус "набирает сообщение" каждые Х секунд
+        async def send_typing_periodically(): 
+            while True:
+                try:
+                    await bot.send_chat_action(chat_id, 'typing', timeout=10)
+                    await asyncio.sleep(7)
+                except Exception as e:
+                    logger.error(f"send_chat_action не отправлен (для chat_id {chat_id}) -- {e}")
+                    break
+                                
+        # задача для отправки успокаивающего сообщения через Х секунд после начала ожидания ответа от API ИИ
+        async def send_wait_message():
+            nonlocal wait_message_sent, wait_message_id
+            await asyncio.sleep(int(config['mainconf']['a_calming_message_delay']))
+            text = telegramify_markdown.markdownify(config['mainconf']['a_calming_message'])      # чистим markdown
+            msg = await bot.send_message(chat_id, text, parse_mode='MarkdownV2', reply_markup=types.ReplyKeyboardRemove())
+            wait_message_sent = True
+            wait_message_id = msg.message_id
+
+        # Запускаем задачи /\
+        typing_task = asyncio.create_task(send_typing_periodically())
+        wait_message_task = asyncio.create_task(send_wait_message())
+
         chat.save_message_to_json(chat_id=chat_id, role="user", sender_name=username, message=message_text)   #записываем текст сообщения от ЮЗЕРА в историю сообщений
+
         last_messages = chat.get_context(chat_id)
         lang_model = chat.proc_lang_model(chat_id)
         
@@ -461,13 +531,42 @@ async def question_for_ai(chat_id, username, message_text):
             response_text, price, response_req_tokens = await openAI.req_to_openai(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
         elif lang_model in deepseek_models:
             response_text, price, response_req_tokens = await openAI.req_to_deepseek(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
+                
+        
+        # Отменяем задачу отправки сообщения "Нужно ещё подождать", если она еще не выполнена
+        wait_message_task.cancel()
+        try:
+            await wait_message_task
+        except asyncio.CancelledError:
+            pass  # Ожидаем завершения задачи, игнорируем ошибку отмены
+        
+        await send_msg(chat_id, response_text)        # отправляем ответ ии пользователю
         
         chat.save_message_to_json(chat_id=chat_id, role="assistant", sender_name=username, message=response_text, price=price)      #записываем текст сообщения от БОТА в историю сообщений
-        await send_msg(chat_id, response_text)
-        # await bot.send_message(chat_id, response_text, parse_mode='MarkdownV2', reply_markup=types.ReplyKeyboardRemove())     #отправляем ответ
+        
     except Exception as e:
-        await bot.send_message(chat_id, f"Оши5ка : {e}", reply_markup=types.ReplyKeyboardRemove())     #отправляем ответ
-        logger.error(f"Ошибка стандартной обработки стандартного вопроса - {e}")
+        if str(e) == "Request timed out.":
+            text = telegramify_markdown.markdownify(config['mainconf']['msg_if_req_timeout'])      # чистим markdown
+            await bot.send_message(chat_id, text, parse_mode='MarkdownV2', reply_markup=types.ReplyKeyboardRemove())
+            logger.error(f"Ошибка таймаута при обработке запроса к ИИ от {chat_id} - {e}")
+        else:
+            logger.error(f"Ошибка при обработке запроса к ИИ {chat_id} - {e}")          
+        
+    finally:
+        # Если сообщение "нужно подождать" было отправлено, удаляем его
+        if wait_message_sent:
+            try:
+                await bot.delete_message(chat_id, wait_message_id)
+            except Exception as e:
+                logger.error(f"Не удалось удалить сообщение: {e}")
+
+        # Останавливаем задачу отправки 'typing'
+        if typing_task:
+            typing_task.cancel()
+            try:
+                await typing_task
+            except asyncio.CancelledError:
+                pass  # Ожидаем завершения задачи, игнорируем ошибку отмены
 
 #----------------------------------------------------------------------------------------------------------
 
@@ -549,10 +648,12 @@ async def handle_message(message):
                     model_arr.append(config['mainconf']['btn_text_6'])
                     model_arr.append(config['mainconf']['btn_text_7'])
                     
+                    currency_symbol = config['mainconf']['currency_symbol']
+                    
                     text = ""
                     text += "Цены  ( запрос / ответ ):\n"                    
                     for item in model_arr:
-                        text += item + "   ( " + config['AIconf'][f'price_{item}_req'] + "₽ / " + config['AIconf'][f'price_{item}_resp'] + "₽ )" + "\n"   
+                        text += item + "   ( " + config['AIconf'][f'price_{item}_req'] + currency_symbol + " / " + config['AIconf'][f'price_{item}_resp'] + currency_symbol + " )" + "\n"   
                     text += "\nВыбери новую языковую модель:\n"               
                     
                     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)    # Создаем объект клавиатуры
