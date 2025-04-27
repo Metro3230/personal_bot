@@ -327,9 +327,9 @@ async def question_for_ai(chat_id, username, message_text):
         chat.save_message_to_json(chat_id=chat_id, role="assistant", sender_name=username, message=response_text, price=price)      #записываем текст сообщения от БОТА в историю сообщений
 
     except Exception as e:
+        logger.error(f"Ошибка при обработке запроса к ИИ от {chat_id} - {e}")
         text = telegramify_markdown.markdownify(config['mainconf']['msg_if_req_error'])      # чистим markdown
         await bot.send_message(chat_id, text, parse_mode='MarkdownV2', reply_markup=types.ReplyKeyboardRemove()) # предупреждаем пользователя об ощибке
-        logger.error(f"Ошибка при обработке запроса к ИИ от {chat_id} - {e}")
         
     finally:
         # Если сообщение "нужно подождать" было отправлено, удаляем его
@@ -385,10 +385,12 @@ async def handle_message(message):
                     currency_symbol = config['mainconf']['currency_symbol']
                     if role == None:
                         role = "Стандарт"
+                    balance = await openAI.get_balance() 
                     text = (f"`Всего потрачено саниных денег: {total_cost} {currency_symbol}`\n" +
+                            f"`Баланс ProxyAPI: {balance}`\n" +  
                             f"`Языковая модель: {language_model}`\n" +
                             f"`Роль ассистента: {role}`\n" )
-                    await bot.send_message(chat_id, text, parse_mode='MarkdownV2')                                   
+                    await bot.send_message(chat_id, text, parse_mode='MarkdownV2')                                 
                     
                 elif message_text.startswith('/dw_data'):
                     await handle_dw_data(chat_id, message_text)                     
@@ -430,6 +432,8 @@ async def handle_message(message):
                     currency_symbol = config['mainconf']['currency_symbol']
                     
                     text = ""
+                    text += config['mainconf']['about']
+                    text += "\n\n\n\n"  
                     text += "Цены  ( запрос / ответ ):\n"                    
                     for item in model_arr:
                         text += item + "   ( " + config['AIconf'][f'price_{item}_req'] + currency_symbol + " / " + config['AIconf'][f'price_{item}_resp'] + currency_symbol + " )" + "\n"   
@@ -443,17 +447,14 @@ async def handle_message(message):
                     markup_5 = types.KeyboardButton(config['mainconf']['btn_text_5'])
                     markup_6 = types.KeyboardButton(config['mainconf']['btn_text_6'])
                     markup_7 = types.KeyboardButton(config['mainconf']['btn_text_7'])
-                    keyboard.row(markup_1, markup_2)
+                    
+                    keyboard.row(markup_1, markup_2)     
                     keyboard.row(markup_3, markup_4)
                     keyboard.row(markup_5, markup_6)
                     keyboard.row(markup_7, "отмена")
-                    await bot.send_message(chat_id, text, reply_markup=keyboard)       # Отправляем сообщение с клавиатурой
-                    
-                elif message_text.startswith('/about'): #++++++++
-                    chat.set_proc_flag(chat_id, 3, username)
-                    text = config['mainconf']['about']   
                     text = telegramify_markdown.markdownify(text)      # чистим markdown
-                    await bot.send_message(chat_id, text, parse_mode='MarkdownV2')       # Отправляем сообщение
+                    await bot.send_message(chat_id, text, reply_markup=keyboard, parse_mode='MarkdownV2')       # Отправляем сообщение с клавиатурой
+
                                     
                                     
                                     

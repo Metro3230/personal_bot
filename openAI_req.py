@@ -4,6 +4,7 @@ from pathlib import Path
 # from config import AIconf
 import os
 import configparser
+import requests
 
 script_dir = Path(__file__).parent  # Определяем путь к текущему скрипту
 data_dir = script_dir / 'data'
@@ -74,6 +75,24 @@ async def req_to_deepseek(msgs, model='deepseek-chat'):
 
 
 
+async def get_balance():
+    
+    balance_url = config['AIconf']['proxyapi_balance']
+    
+    headers = {
+        'Authorization': 'Bearer ' + ai_API_key
+    }
+    
+    response = requests.get(balance_url, headers=headers)
+    
+    # Парсим JSON-ответ и извлекаем значение баланса
+    balance_data = response.json()
+    balance = balance_data.get('balance')
+        
+    return balance  #возвращаем баланс 
+
+
+
 
 
 
@@ -111,7 +130,7 @@ async def req_to_deepseek(msgs, model='deepseek-chat'):
 #     print(response_text)
 #     print(wind_tokens)    
 #     print(rub_price)
-
+    print(get_balance)
 
 
 

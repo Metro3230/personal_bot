@@ -64,3 +64,45 @@ log for v01
 2025-02-16 21:42:23,044 - __main__ - INFO - Скрипт запущен
 2025-02-16 22:14:53,870 - __main__ - INFO - Скрипт запущен
 2025-02-18 13:00:17,545 - __main__ - ERROR - Ошибка при обработке запроса к ИИ 7080566621 - Error code: 429 - {'detail': 'Too many requests'}
+2025-03-06 20:44:33,520 - __main__ - INFO - пользователь 555002659 залогинился
+2025-03-18 15:39:06,898 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 1770
+2025-03-24 13:15:39,991 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 3511
+2025-03-24 13:15:59,737 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 597
+2025-03-24 13:23:11,270 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 631
+2025-03-24 13:23:44,285 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 407
+2025-03-24 13:24:10,009 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 485
+2025-03-24 13:28:05,208 - __main__ - ERROR - Ошибка стандартной обработки стандартного вопроса - A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of PreCode entity at byte offset 522
+2025-04-06 09:38:03,009 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:38:15,419 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:38:27,810 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:38:39,718 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:38:51,740 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:39:03,787 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:39:15,610 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:39:27,469 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:39:39,394 - __main__ - INFO - Скрипт запущен
+2025-04-06 09:39:51,164 - __main__ - INFO - Скрипт запущен
+2025-04-15 18:29:39,723 - __main__ - INFO - Скрипт запущен
+2025-04-15 18:29:51,936 - __main__ - INFO - Скрипт запущен
+2025-04-15 18:30:03,903 - __main__ - INFO - Скрипт запущен
+2025-04-15 18:30:15,820 - __main__ - INFO - Скрипт запущен
+2025-04-15 18:30:27,570 - __main__ - INFO - Скрипт запущен
+2025-04-18 16:12:42,209 - __main__ - INFO - Скрипт запущен
+2025-04-18 16:17:44,226 - __main__ - INFO - Скрипт запущен
+2025-04-18 16:50:05,627 - __main__ - INFO - Скрипт запущен
+2025-04-21 13:16:19,784 - __main__ - INFO - Скрипт запущен
+2025-04-21 13:20:08,371 - __main__ - INFO - Скрипт запущен
+2025-04-21 13:21:36,086 - __main__ - INFO - Скрипт запущен
+2025-04-21 13:21:39,596 - __main__ - ERROR - Ошибка при обработке запроса к ИИ от 7080566621 - cannot access local variable 'response_text' where it is not associated with a value
+2025-04-22 15:39:41,048 - __main__ - INFO - Скрипт запущен
+2025-04-22 17:29:44,736 - __main__ - INFO - Скрипт запущен
+2025-04-22 18:48:22,100 - __main__ - INFO - Скрипт запущен
+2025-04-27 22:50:17,527 - __main__ - INFO - Скрипт запущен
+2025-04-27 22:51:50,339 - __main__ - INFO - Скрипт запущен
+2025-04-27 22:55:02,301 - __main__ - INFO - Скрипт запущен
+2025-04-27 22:56:43,101 - __main__ - INFO - Скрипт запущен
+2025-04-27 23:02:52,023 - __main__ - INFO - Скрипт запущен
+2025-04-27 23:04:24,949 - __main__ - INFO - Скрипт запущен
+2025-04-27 23:06:45,596 - __main__ - INFO - Скрипт запущен
+2025-04-27 23:08:27,162 - __main__ - INFO - Скрипт запущен
+2025-04-27 23:10:29,013 - __main__ - INFO - Скрипт запущен
