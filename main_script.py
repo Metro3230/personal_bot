@@ -298,21 +298,8 @@ async def question_for_ai(chat_id, username, message_text):
         last_messages = chat.get_context(chat_id)
         lang_model = chat.proc_lang_model(chat_id)
         
-        openai_models = []
-        openai_models.append(config['mainconf']['btn_text_1'])
-        openai_models.append(config['mainconf']['btn_text_2'])
-        openai_models.append(config['mainconf']['btn_text_3'])
-        openai_models.append(config['mainconf']['btn_text_4'])
-        openai_models.append(config['mainconf']['btn_text_5'])
-        
-        deepseek_models = []
-        deepseek_models.append(config['mainconf']['btn_text_6'])
-        deepseek_models.append(config['mainconf']['btn_text_7'])
-        
-        if lang_model in openai_models:        # запрос в зависимости от модели
-            response_text, price, response_req_tokens = await openAI.req_to_openai(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
-        elif lang_model in deepseek_models:
-            response_text, price, response_req_tokens = await openAI.req_to_deepseek(last_messages, lang_model)   #отправляем историю чата (чат ид) боту
+        # Единый вызов ИИ через OpenAI‑совместимый ProxyAPI эндпоинт (см. openAI_req.req_to_ai)
+        response_text, price, response_req_tokens = await openAI.req_to_ai(last_messages, lang_model)
                 
         
         # Отменяем задачу отправки сообщения "Нужно ещё подождать", если она еще не выполнена
@@ -419,39 +406,37 @@ async def handle_message(message):
                     await bot.send_message(chat_id, text, reply_markup=keyboard)       # Отправляем сообщение с клавиатурой
                     
                 elif message_text.startswith('/new_lang_model'): #++++++++
-                    chat.set_proc_flag(chat_id, 3, username)                    
-                    model_arr = []
-                    model_arr.append(config['mainconf']['btn_text_1'])
-                    model_arr.append(config['mainconf']['btn_text_2'])
-                    model_arr.append(config['mainconf']['btn_text_3'])
-                    model_arr.append(config['mainconf']['btn_text_4'])
-                    model_arr.append(config['mainconf']['btn_text_5'])
-                    model_arr.append(config['mainconf']['btn_text_6'])
-                    model_arr.append(config['mainconf']['btn_text_7'])
-                    
+                    chat.set_proc_flag(chat_id, 3, username)
+
+                    # Собираем список моделей из mainconf: все ключи btn_text_*
+                    model_arr = [val for key, val in config['mainconf'].items() if key.startswith('btn_text_')]
+                    # сортировка по алфавиту; при необходимости можно сортировать по номеру
+                    model_arr.sort()
+
                     currency_symbol = config['mainconf']['currency_symbol']
-                    
+
                     text = ""
                     text += config['mainconf']['about']
-                    text += "\n\n\n\n"  
-                    text += "Цены  ( запрос / ответ ):\n"                    
+                    text += "\n\n\n\n"
+                    text += "Цены  ( запрос / ответ ):\n"
                     for item in model_arr:
-                        text += item + "   ( " + config['AIconf'][f'price_{item}_req'] + currency_symbol + " / " + config['AIconf'][f'price_{item}_resp'] + currency_symbol + " )" + "\n"   
-                    text += "\nВыбери новую языковую модель:\n"               
-                    
-                    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)    # Создаем объект клавиатуры
-                    markup_1 = types.KeyboardButton(config['mainconf']['btn_text_1'])     # Добавляем кнопки
-                    markup_2 = types.KeyboardButton(config['mainconf']['btn_text_2'])
-                    markup_3 = types.KeyboardButton(config['mainconf']['btn_text_3'])
-                    markup_4 = types.KeyboardButton(config['mainconf']['btn_text_4'])
-                    markup_5 = types.KeyboardButton(config['mainconf']['btn_text_5'])
-                    markup_6 = types.KeyboardButton(config['mainconf']['btn_text_6'])
-                    markup_7 = types.KeyboardButton(config['mainconf']['btn_text_7'])
-                    
-                    keyboard.row(markup_1, markup_2)     
-                    keyboard.row(markup_3, markup_4)
-                    keyboard.row(markup_5, markup_6)
-                    keyboard.row(markup_7, "отмена")
+                        req_p = config['AIconf'].get(f'price_{item}_req', '0')
+                        resp_p = config['AIconf'].get(f'price_{item}_resp', '0')
+                        text += f"{item}   ( {req_p}{currency_symbol} / {resp_p}{currency_symbol} )\n"
+                    text += "\nВыбери новую языковую модель:\n"
+
+                    # Клавиатура с кнопками по 3 в строке + 'отмена'
+                    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+                    row = []
+                    for i, label in enumerate(model_arr, start=1):
+                        row.append(types.KeyboardButton(label))
+                        if i % 3 == 0:
+                            keyboard.row(*row)
+                            row = []
+                    if row:
+                        keyboard.row(*row)
+                    keyboard.row("отмена")
+
                     text = telegramify_markdown.markdownify(text)      # чистим markdown
                     await bot.send_message(chat_id, text, reply_markup=keyboard, parse_mode='MarkdownV2')       # Отправляем сообщение с клавиатурой
 
@@ -473,24 +458,17 @@ async def handle_message(message):
                         await bot.send_message(chat_id, 'Новая роль установлена', reply_markup=types.ReplyKeyboardRemove())    
                                           
                 elif proc_flag == 3:         #если у пользователя флаг ожидания новой -языковой- модели
-                    model_arr = []
-                    model_arr.append(config['mainconf']['btn_text_1'])
-                    model_arr.append(config['mainconf']['btn_text_2'])
-                    model_arr.append(config['mainconf']['btn_text_3'])
-                    model_arr.append(config['mainconf']['btn_text_4'])
-                    model_arr.append(config['mainconf']['btn_text_5'])
-                    model_arr.append(config['mainconf']['btn_text_6'])
-                    model_arr.append(config['mainconf']['btn_text_7'])
+                    model_arr = [val for key, val in config['mainconf'].items() if key.startswith('btn_text_')]
                     if message_text == 'отмена':
                         chat.set_proc_flag(chat_id, 1, username)
-                        await bot.send_message(chat_id, 'Отменено', reply_markup=types.ReplyKeyboardRemove())         
+                        await bot.send_message(chat_id, 'Отменено', reply_markup=types.ReplyKeyboardRemove())
                     elif message_text in model_arr:
                         chat.set_proc_flag(chat_id, 1, username)
                         chat.proc_lang_model(chat_id, message_text)
-                        await bot.send_message(chat_id, 'Новая языковая модель установлена', reply_markup=types.ReplyKeyboardRemove()) 
-                    else:   
+                        await bot.send_message(chat_id, 'Новая языковая модель установлена', reply_markup=types.ReplyKeyboardRemove())
+                    else:
                         chat.set_proc_flag(chat_id, 1, username)
-                        await bot.send_message(chat_id, 'Такой нет 😠', reply_markup=types.ReplyKeyboardRemove()) 
+                        await bot.send_message(chat_id, 'Такой нет 😠', reply_markup=types.ReplyKeyboardRemove())
                         
                     
                 else: # просто запрос 
@@ -511,10 +489,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
-
-
-
-

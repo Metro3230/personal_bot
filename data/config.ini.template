@@ -20,16 +20,20 @@ contacts = https://intim13.ru/
 ; максимальное количество запрососв в секунду на сервер телеграмм
 requests_per_second = 29
 
-; надписи в кнопках:
+; надписи в кнопках (текст == метка модели):
 btn_text_1 = gpt-4o
 btn_text_2 = gpt-4o-mini
 btn_text_3 = gpt-4.1
-btn_text_4 = gpt-4.1-mini
+btn_text_4 = gpt-5
 btn_text_5 = o1-mini
 btn_text_6 = o1
 btn_text_7 = o3-mini
 btn_text_8 = deepseek-chat
 btn_text_9 = deepseek-reasoner
+btn_text_10 = claude-3-5-sonnet
+btn_text_11 = claude-3-5-haiku
+btn_text_12 = gemini-2.5-pro
+btn_text_13 = gemini-2.5-flash
 
 ; символ валюты
 currency_symbol = ₽
@@ -64,12 +68,17 @@ msg_if_req_timeout = Извини, **сервер перегружен**, выш
 
 
 [AIconf]
-; для API запросов
-openai_API_url = https://api.proxyapi.ru/openai/v1
+; для OpenAI-совместимого API (универсальный прокси)
+openai_API_url = https://openai.api.proxyapi.ru/v1
 deepseek_API_url = https://api.proxyapi.ru/deepseek
 proxyapi_balance = https://api.proxyapi.ru/proxyapi/balance
 
 ; стоимость моделей (за 1000 токенов) Важно соблюсти правило написания "price_МОДЕЛЬ_req"
+; OpenAI
+
+price_gpt-5_req = 0.306
+price_gpt-5_resp = 2.448
+
 price_gpt-4o_req = 0.72
 price_gpt-4o_resp = 2.88
 
@@ -85,24 +94,54 @@ price_gpt-4o-mini_resp = 0.1728
 price_o1-mini_req = 0.864
 price_o1-mini_resp = 1.8
 
-; price_o1-preview_req = 3
-; price_o1-preview_resp = 9
-
 price_o1_req = 3
 price_o1_resp = 9
 
 price_o3-mini_req = 0.3168
 price_o3-mini_resp = 1.2672
 
+; DeepSeek
 price_deepseek-chat_req = 0.07776
 price_deepseek-chat_resp = 0.3168
 
 price_deepseek-reasoner_req = 0.1584
 price_deepseek-reasoner_resp = 0.63072
 
-; таймаут запроса к ии (в секундах (с точкой?))
+; Anthropic (Claude)
+price_claude-3-5-sonnet_req = 0.7344
+price_claude-3-5-sonnet_resp = 3.672
+
+price_claude-3-5-haiku_req = 0.2448
+price_claude-3-5-haiku_resp = 1.224
+
+; Google Gemini
+price_gemini-2.5-pro_req = 0.306
+price_gemini-2.5-pro_resp = 2.448
+
+price_gemini-2.5-flash_req = 0.07344
+price_gemini-2.5-flash_resp = 0.612
+
+; таймаут запроса к ии (в секундах)
 ai_req_timeout = 500.0
 
-
-
 msg_if_req_error = Что-то не так 
+
+
+; Сопоставление "текст кнопки" -> "provider/model" для OpenAI-совместимого API
+[models]
+gpt-4o = openai/gpt-4o-2024-11-20
+gpt-4o-mini = openai/gpt-4o-mini-2024-07-18
+gpt-4.1 = openai/gpt-4.1-2025-04-14
+gpt-5 = openai/gpt-5-2025-08-07
+o1-mini = openai/o1-mini-2024-09-12
+o1 = openai/o1-2024-12-17
+o3-mini = openai/o3-mini-2025-01-31
+
+deepseek-chat = deepseek/deepseek-chat
+deepseek-reasoner = deepseek/deepseek-reasoner
+
+claude-3-5-sonnet = anthropic/claude-3-5-sonnet-20241022
+claude-3-5-haiku = anthropic/claude-3-5-haiku-20241022
+
+gemini-2.5-pro = gemini/gemini-2.5-pro
+gemini-2.5-flash = gemini/gemini-2.5-flash
